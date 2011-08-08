@@ -58,6 +58,8 @@ module FacebookTestUsers
         puts "User ID:      #{user.id}"
         puts "Access Token: #{user.access_token}"
         puts "Login URL:    #{user.login_url}"
+        puts "Email:        #{user.email}"
+        puts "Password:     #{user.password}"
       end
 
       desc "friend", "Make two of an app's users friends"
