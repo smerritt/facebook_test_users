@@ -37,11 +37,8 @@ module FacebookTestUsers
       end
     end
 
-    def create_user
-      user_data = RestClient.post(users_url,
-        :access_token => access_token,
-        :installed => true)
-
+    def create_user(options = {})
+      user_data = RestClient.post(users_url, {:access_token => access_token}.merge(options))
       User.new(JSON[user_data])
     end
 
