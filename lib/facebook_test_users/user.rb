@@ -3,13 +3,12 @@ require 'uri'
 module FacebookTestUsers
   class User
 
-    attr_reader :id, :access_token, :login_url
+    ATTRIBUTES = [:id, :access_token, :login_url, :email, :password]
+    ATTRIBUTES.each { |attr| attr_reader attr }
 
     def initialize(attrs)
-      # Hacky, but it allows for use of symbol keys, which are nice in
-      # a console.
-      @id, @access_token, @login_url = %w[id access_token login_url].map do |field|
-        attrs[field.to_s] || attrs[field.to_sym]
+      ATTRIBUTES.each do |attr|
+        instance_variable_set("@#{attr}", attrs[attr.to_s] || attrs[attr.to_sym])
       end
     end
 
