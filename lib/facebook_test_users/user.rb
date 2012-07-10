@@ -16,6 +16,12 @@ module FacebookTestUsers
       RestClient.delete(destroy_url)
     end
 
+    # Facebook test users all share the same birthday. Perhaps it's the
+    # developer's!
+    def birthday
+      Date.new(1980, 8, 8)
+    end
+
     private
 
     def destroy_url
