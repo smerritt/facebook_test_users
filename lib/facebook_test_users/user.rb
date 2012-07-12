@@ -3,12 +3,11 @@ require 'uri'
 module FacebookTestUsers
   class User
 
-    ATTRIBUTES = [:id, :access_token, :login_url, :email, :password]
-    ATTRIBUTES.each { |attr| attr_reader attr }
+    attr_accessor :id, :access_token, :login_url, :email, :password
 
     def initialize(attrs)
-      ATTRIBUTES.each do |attr|
-        instance_variable_set("@#{attr}", attrs[attr.to_s] || attrs[attr.to_sym])
+      attrs.each do |field, value|
+        instance_variable_set("@#{field}", value) if respond_to?(field)
       end
     end
 
@@ -22,10 +21,20 @@ module FacebookTestUsers
       Date.new(1980, 8, 8)
     end
 
+    def send_friend_request_to(other)
+      RestClient.post(friend_request_url_for(other),
+        'access_token' => access_token.to_s)
+    end
+
     private
 
     def destroy_url
       GRAPH_API_BASE + "/#{id}?access_token=#{URI.escape(access_token.to_s)}"
     end
+
+    def friend_request_url_for(other)
+      GRAPH_API_BASE + "/#{id}/friends/#{other.id}"
+    end
+
   end
 end
