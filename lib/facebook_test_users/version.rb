@@ -1,3 +1,3 @@
 module FacebookTestUsers
-  VERSION = "0.0.3.paperless"
+  VERSION = "0.0.4.paperless"
 end
