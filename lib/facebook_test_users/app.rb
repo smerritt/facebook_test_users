@@ -1,15 +1,15 @@
-require 'json'
+require 'multi_json'
 
 module FacebookTestUsers
   class App
 
     attr_reader :name, :id, :secret
-    
+
     def initialize(attrs)
       @name, @id, @secret = attrs[:name].to_s, attrs[:id].to_s, attrs[:secret].to_s
       validate!
     end
-      
+
     def attrs
       {:name => name, :id => id, :secret => secret}
     end
@@ -32,14 +32,14 @@ module FacebookTestUsers
           :access_token => access_token
         })
 
-      JSON[users_data]["data"].map do |user_data|
+      MultiJson.decode(users_data)["data"].map do |user_data|
         User.new(user_data)
       end
     end
 
     def create_user(options = {})
       user_data = RestClient.post(users_url, {:access_token => access_token}.merge(options))
-      User.new(JSON[user_data])
+      User.new(MultiJson.decode(user_data))
     end
 
     ## query methods
