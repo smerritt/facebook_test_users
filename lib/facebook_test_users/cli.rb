@@ -64,8 +64,8 @@ module FacebookTestUsers
 
       desc "friend", "Make two of an app's users friends"
       method_option "app", :aliases => %w[-a], :type => :string, :required => true, :banner => "Name of the app"
-      method_option "user1", :aliases => %w[-1 -u1], :type => :string, :required => true, :banner => "ID of the first user"
-      method_option "user2", :aliases => %w[-2 -u2], :type => :string, :required => true, :banner => "ID of the second user"
+      method_option "user1", :aliases => %w[-1 -u1], :type => :string, :required => true, :banner => "First user ID"
+      method_option "user2", :aliases => %w[-2 -u2], :type => :string, :required => true, :banner => "Second user ID"
 
       def friend
         app = find_app!(options[:app])
