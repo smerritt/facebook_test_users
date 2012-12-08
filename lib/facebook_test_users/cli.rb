@@ -124,7 +124,7 @@ module FacebookTestUsers
     desc "apps", "Commands for managing FB applications"
     subcommand :apps, FacebookTestUsers::CLI::Apps
 
-    desc "apps", "Commands for managing FB applications' test users"
+    desc "users", "Commands for managing FB applications test users"
     subcommand :users, FacebookTestUsers::CLI::Users
   end
 end
