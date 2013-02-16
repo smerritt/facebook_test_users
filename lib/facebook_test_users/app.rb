@@ -52,6 +52,16 @@ module FacebookTestUsers
       User.new(MultiJson.decode(user_data))
     end
 
+    def rm_user(uid, owner_app)
+      options = {
+        :access_token => access_token,
+        :owner_access_token => owner_app.access_token,
+        :uid => uid,
+      }
+      user_data = RestClient.post(users_url, options)
+      User.new(MultiJson.decode(user_data))
+    end
+
     ## query methods
     def self.all
       if DB[:apps]
