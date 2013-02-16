@@ -163,9 +163,19 @@ module FacebookTestUsers
         end
 
         if user
-          user.destroy
+          begin
+            user.destroy
+            puts "User ID #{user.id} removed"
+          rescue RestClient::BadRequest => bad_request
+            json = MultiJson.decode(bad_request.response)
+            begin
+              $stderr.write(json['error']['message'] + "\n")
+            rescue
+              $stderr.write(json.inspect + "\n")
+            end
+          end
         else
-          $stderr.write("Unknown user '#{options[:user]}'")
+          $stderr.write("Unknown user '#{options[:user]}'\n")
           raise ArgumentError, "No such user"
         end
       end
