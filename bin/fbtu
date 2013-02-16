@@ -7,4 +7,4 @@ rescue LoadError
   require 'facebook_test_users/cli'
 end
 
-FacebookTestUsers::CLI.start
+FacebookTestUsers::CLI::Main.start

@@ -2,7 +2,7 @@ require 'thor'
 require 'facebook_test_users'
 
 module FacebookTestUsers
-  class CLI < Thor
+  module CLI
     class Apps < Thor
 
       check_unknown_options!
@@ -118,13 +118,15 @@ module FacebookTestUsers
 
     end # Users
 
-    check_unknown_options!
-    def self.exit_on_failure?() true end
+    class Main < Thor
+      check_unknown_options!
+      def self.exit_on_failure?() true end
 
-    desc "apps", "Commands for managing FB applications"
-    subcommand :apps, FacebookTestUsers::CLI::Apps
+      desc "apps", "Commands for managing FB applications"
+      subcommand :apps, Apps
 
-    desc "users", "Commands for managing FB applications test users"
-    subcommand :users, FacebookTestUsers::CLI::Users
+      desc "users", "Commands for managing FB applications test users"
+      subcommand :users, Users
+    end
   end
 end

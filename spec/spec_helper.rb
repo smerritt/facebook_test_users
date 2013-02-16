@@ -27,7 +27,7 @@ module FBTU
         begin
           capture_stdout_into(@out) do
             capture_stderr_into(@err) do
-              FacebookTestUsers::CLI.start(argv_ish)
+              FacebookTestUsers::CLI::Main.start(argv_ish)
             end
           end
         rescue Exception => e
