@@ -3,6 +3,16 @@ require 'facebook_test_users'
 
 module FacebookTestUsers
   module CLI
+    def CLI.find_app!(name)
+      app = App.find_by_name(name)
+      unless app
+        $stderr.puts "Unknown app #{name}."
+        $stderr.puts "Run 'fbtu apps' to see known apps."
+        raise ArgumentError, "No such app"
+      end
+      app
+    end
+
     class Apps < Thor
 
       check_unknown_options!
@@ -39,7 +49,7 @@ module FacebookTestUsers
       method_option "app", :aliases => %w[-a], :type => :string, :required => true, :banner => "Name of the app"
 
       def list
-        app = find_app!(options[:app])
+        app = FacebookTestUsers::CLI::find_app!(options[:app])
         if app.users.any?
           shell.print_table([
               ['User ID', 'Access Token', 'Login URL'],
@@ -63,7 +73,7 @@ module FacebookTestUsers
                     :banner => "the locale for the test user"
 
       def create
-        app = find_app!(options[:app])
+        app = FacebookTestUsers::CLI::find_app!(options[:app])
         attrs = options.select { |k, v| %w(name installed locale).include? k.to_s }
         user = app.create_user(attrs)
         puts "User ID:      #{user.id}"
@@ -79,7 +89,7 @@ module FacebookTestUsers
       method_option "user2", :aliases => %w[-2 -u2], :type => :string, :required => true, :banner => "Second user ID"
 
       def friend
-        app = find_app!(options[:app])
+        app = FacebookTestUsers::CLI::find_app!(options[:app])
         users = app.users
         u1 = users.find {|u| u.id.to_s == options[:user1] } or raise ArgumentError, "No user found w/id #{options[:user1].inspect}"
         u2 = users.find {|u| u.id.to_s == options[:user2] } or raise ArgumentError, "No user found w/id #{options[:user2].inspect}"
@@ -101,7 +111,7 @@ module FacebookTestUsers
                     :banner => "New password for the user"
 
       def change
-        app = find_app!(options[:app])
+        app = FacebookTestUsers::CLI::find_app!(options[:app])
         user = app.users.find do |user|
           user.id.to_s == options[:user].to_s
         end
@@ -124,7 +134,7 @@ module FacebookTestUsers
       method_option "user", :banner => "ID of the user to remove", :aliases => %w[-u], :type => :string, :required => true
 
       def rm
-        app = find_app!(options[:app])
+        app = FacebookTestUsers::CLI::find_app!(options[:app])
         user = app.users.find do |user|
           user.id.to_s == options[:user].to_s
         end
@@ -141,19 +151,8 @@ module FacebookTestUsers
       method_option "app", :aliases => %w[-a], :type => :string, :required => true, :banner => "Name of the app"
 
       def nuke
-        app = find_app!(options[:app])
+        app = FacebookTestUsers::CLI::find_app!(options[:app])
         app.users.each(&:destroy)
-      end
-
-      private
-      def find_app!(name)
-        app = App.find_by_name(options[:app])
-        unless app
-          $stderr.puts "Unknown app #{options[:app]}."
-          $stderr.puts "Run 'fbtu apps' to see known apps."
-          raise ArgumentError, "No such app"
-        end
-        app
       end
 
     end # Users
