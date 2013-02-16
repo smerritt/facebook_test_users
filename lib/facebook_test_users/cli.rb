@@ -175,6 +175,35 @@ module FacebookTestUsers
         end
       end
 
+      desc "list-apps", "List apps associated with the user"
+      method_option "user", :aliases => %w[-u], :type => :string, :required => true,
+                    :banner => "ID of the user for which to list associated apps"
+      method_option "app", :aliases => %w[-a], :type => :string, :required => true,
+                    :banner => "Name of the app owning the user"
+      def list_apps
+        app = FacebookTestUsers::CLI::find_app!(options[:app])
+        user = app.users.find do |user|
+          user.id.to_s == options[:user].to_s
+        end
+
+        if user
+          response = user.owner_apps(app)
+          json = MultiJson.decode(response)
+          apps = json['data'] rescue nil
+          if apps
+            shell.print_table([
+              ['App name', 'App ID'],
+              *(apps.map { |app| [app['name'], app['id']] })
+            ])
+          else
+            $stderr.write("No apps returned; response was: #{response}\n")
+          end
+        else
+          $stderr.write("Unknown user '#{options[:user]}'\n")
+          raise ArgumentError, "No such user"
+        end
+      end
+
       desc "rm", "Remove a test user from an application"
       method_option "app", :aliases => %w[-a], :type => :string, :required => true, :banner => "Name of the app"
       method_option "user", :banner => "ID of the user to remove", :aliases => %w[-u], :type => :string, :required => true
@@ -195,7 +224,9 @@ module FacebookTestUsers
             if error
               if error.match /(\(#2903\) Cannot delete this test account because it is associated with other applications.)/
                 $stderr.write("#$1\n")
-                $stderr.write("Try: #$0 apps rm-user --owner-app #{options[:app]} --user #{user.id} --owner-app <OTHER APP ID>\n")
+                $stderr.write("Try:\n")
+                $stderr.write("  #$0 users list-apps --app #{options[:app]} --user #{user.id}\n")
+                $stderr.write("  #$0 apps rm-user --owner-app #{options[:app]} --user #{user.id} --from-app <OTHER APP ID>\n")
               else
                 $stderr.write(error + "\n")
               end

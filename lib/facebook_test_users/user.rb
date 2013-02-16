@@ -15,6 +15,10 @@ module FacebookTestUsers
       RestClient.post(change_url, {:access_token => access_token}.merge(options))
     end
 
+    def owner_apps(app)
+      RestClient.get(owner_apps_url(app.access_token))
+    end
+
     def destroy
       RestClient.delete(destroy_url)
     end
@@ -38,6 +42,10 @@ module FacebookTestUsers
 
     def destroy_url
       GRAPH_API_BASE + "/#{id}?access_token=#{URI.escape(access_token.to_s)}"
+    end
+
+    def owner_apps_url(token)
+      GRAPH_API_BASE + "/#{id}/ownerapps?access_token=#{URI.escape(token.to_s)}"
     end
 
     def friend_request_url_for(other)
