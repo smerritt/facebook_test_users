@@ -111,7 +111,7 @@ module FBTU
         app
       end
 
-      def add_user_to(app)
+      def create_user_for(app)
         # real FB test users all have IDs starting with 10000 (or at
         # least the ones that I've seen; N=20 or so)
         user_id = "10000" + rand(9999999999).to_s

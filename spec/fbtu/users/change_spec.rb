@@ -4,8 +4,8 @@ describe "fbtu users change" do
   before(:each) do
     alpha = register_app('alpha')
 
-    @alice = add_user_to(alpha)
-    @bob   = add_user_to(alpha)
+    @alice = create_user_for(alpha)
+    @bob   = create_user_for(alpha)
 
     FakeWeb.register_uri(:post,
       "https://graph.facebook.com/#{@alice.id}",

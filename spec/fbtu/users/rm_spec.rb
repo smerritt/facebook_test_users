@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_hel
 describe "fbtu users rm" do
   before(:each) do
     @alpha = register_app('alpha')
-    @alice = add_user_to(@alpha)
+    @alice = create_user_for(@alpha)
   end
 
   it "deletes the user" do

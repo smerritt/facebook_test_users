@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper'))
 
-describe "fbtu users add" do
+describe "fbtu users create" do
   context "with the app installed" do
     before(:each) do
       alpha = register_app('alpha')
@@ -17,25 +17,25 @@ describe "fbtu users add" do
                             :body => new_user_response.to_json)
     end
 
-    it "adds a user" do
-      fbtu %w[users add --app alpha]
+    it "creates a user" do
+      fbtu %w[users create --app alpha]
       @out.should include(@new_user_id.to_s)
     end
 
-    it "adds a user with the app not installed" do
+    it "creates a user with the app not installed" do
       # The API doesn't return the installed status
-      fbtu %w[users add --app alpha --installed false]
+      fbtu %w[users create --app alpha --installed false]
       @out.should include(@new_user_id.to_s)
     end
 
-    it "adds a named user" do
-      fbtu %w[users add --app alpha --name Joe]
+    it "creates a named user" do
+      fbtu %w[users create --app alpha --name Joe]
       # The API doesn't return the name
       @out.should include(@new_user_id.to_s)
     end
 
-    it "adds a user with a locale" do
-      fbtu %w[users add --app alpha --locale en_GB]
+    it "creates a user with a locale" do
+      fbtu %w[users create --app alpha --locale en_GB]
       # The API doesn't return the locale
       @out.should include(@new_user_id.to_s)
     end
@@ -43,7 +43,7 @@ describe "fbtu users add" do
 
   it "tells you if there was no such app" do
     lambda do
-      fbtu %w[users add --app beta], :quiet => true
+      fbtu %w[users create --app beta], :quiet => true
     end.should raise_error
     @err.should include("Unknown app beta")
   end
