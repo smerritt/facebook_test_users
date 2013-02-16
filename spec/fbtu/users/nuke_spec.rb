@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_hel
 
 describe "fbtu users nuke" do
   before(:each) do
-    fbtu %w[apps add --name alpha --app-id 123456 --app-secret abcdef]
+    fbtu %w[apps register --name alpha --app-id 123456 --app-secret abcdef]
     FakeWeb.register_uri(:get,
       'https://graph.facebook.com/oauth/access_token?client_id=123456&client_secret=abcdef&grant_type=client_credentials',
       :body => 'access_token=doublesecret')

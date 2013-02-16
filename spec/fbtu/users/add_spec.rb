@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_hel
 describe "fbtu users add" do
   context "with the app installed" do
     before(:each) do
-      alpha = add_app('alpha')
+      alpha = register_app('alpha')
 
       @new_user_id = 60189
       new_user_response = {

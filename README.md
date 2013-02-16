@@ -12,7 +12,7 @@ easy to get started.
 
 `$ gem install facebook_test_users`
 
-`$ fbtu apps add --name myapp --app-id 123456 --app-secret abcdef`
+`$ fbtu apps register --name myapp --app-id 123456 --app-secret abcdef`
 
 `$ fbtu users list --app myapp`
 

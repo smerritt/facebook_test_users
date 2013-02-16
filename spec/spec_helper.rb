@@ -89,7 +89,7 @@ module FBTU
 
       end # UserList
 
-      def add_app(name, opts={})
+      def register_app(name, opts={})
         appinfo = {
           :name => name,
           :app_id => opts[:app_id] || 123456,
@@ -102,7 +102,7 @@ module FBTU
           "https://graph.facebook.com/oauth/access_token?client_id=#{appinfo[:app_id]}&client_secret=#{appinfo[:app_secret]}&grant_type=client_credentials",
           :body => "access_token=#{appinfo[:access_token]}")
 
-        fbtu (%w[apps add --name] << name <<
+        fbtu (%w[apps register --name] << name <<
           '--app-id' << appinfo[:app_id] <<
           '--app-secret' << appinfo[:app_secret])
 

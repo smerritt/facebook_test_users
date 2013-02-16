@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_hel
 
 describe "fbtu users change" do
   before(:each) do
-    alpha = add_app('alpha')
+    alpha = register_app('alpha')
 
     @alice = add_user_to(alpha)
     @bob   = add_user_to(alpha)
