@@ -2,6 +2,7 @@ require 'pp'
 require 'stringio'
 require 'tempfile'
 require 'digest/md5'
+require 'json'
 
 require 'facebook_test_users'
 require 'facebook_test_users/cli'
