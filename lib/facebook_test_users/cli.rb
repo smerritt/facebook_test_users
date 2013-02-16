@@ -39,6 +39,29 @@ module FacebookTestUsers
         end
       end
 
+      desc "add-user", "Add an existing user from another app"
+      method_option "to_app", :type => :string, :required => true,
+      :banner => "Name of the application to which user will be added"
+      method_option "user", :aliases => %w[-u], :type => :string, :required => true,
+      :banner => "User ID to add"
+      method_option "from_app", :type => :string, :required => true,
+      :banner => "Name of the application for which user was originally created"
+      method_option "installed", :aliases => %w[-i], :type => :string, :default => true,
+      :banner => "Whether your app should be installed for the user"
+      method_option "permissions", :aliases => %w[-p], :type => :string, :default => "read_stream",
+      :banner => "Permissions the app should be given"
+      def add_user
+        to_app   = FacebookTestUsers::CLI::find_app!(options[:to_app])
+        from_app = FacebookTestUsers::CLI::find_app!(options[:from_app])
+        add_user_options = options.select do |k, v|
+          %w[installed permissions].include? k.to_s
+        end
+        add_user_options[:uid] = options[:user]
+        add_user_options[:owner_access_token] = from_app.access_token
+        result = to_app.add_user(add_user_options)
+        puts "User #{result.id} added to app '#{options[:to_app]}'"
+      end
+
     end # Apps
 
     class Users < Thor

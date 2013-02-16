@@ -42,6 +42,16 @@ module FacebookTestUsers
       User.new(MultiJson.decode(user_data))
     end
 
+    def add_user(options)
+      raise "add_user called without uid" \
+        unless options.has_key?(:uid)
+      raise "add_user called without owner_access_token" \
+        unless options.has_key?(:owner_access_token)
+
+      user_data = RestClient.post(users_url, {:access_token => access_token}.merge(options))
+      User.new(MultiJson.decode(user_data))
+    end
+
     ## query methods
     def self.all
       if DB[:apps]
