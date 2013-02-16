@@ -90,6 +90,35 @@ module FacebookTestUsers
         u2.send_friend_request_to(u1)
       end
 
+      desc "change", "Change a test user's name and/or password"
+      method_option "app", :aliases => %w[-a], :type => :string, :required => true,
+                    :banner => "Name of the app"
+      method_option "user", :aliases => %w[-u], :type => :string, :required => true,
+                    :banner => "ID of the user to change"
+      method_option "name", :aliases => %w[-n], :type => :string, :required => false,
+                    :banner => "New name for the user"
+      method_option "password", :aliases => %w[-n], :type => :string, :required => false,
+                    :banner => "New password for the user"
+
+      def change
+        app = find_app!(options[:app])
+        user = app.users.find do |user|
+          user.id.to_s == options[:user].to_s
+        end
+
+        if user
+          response = user.change(options)
+          if response == "true"
+            puts "Successfully changed user"
+          else
+            puts "Failed to change user"
+          end
+        else
+          $stderr.write("Unknown user '#{options[:user]}'")
+          raise ArgumentError, "No such user"
+        end
+      end
+
       desc "rm", "Remove a test user from an application"
       method_option "app", :aliases => %w[-a], :type => :string, :required => true, :banner => "Name of the app"
       method_option "user", :banner => "ID of the user to remove", :aliases => %w[-u], :type => :string, :required => true

@@ -11,6 +11,10 @@ module FacebookTestUsers
       end
     end
 
+    def change(options = {})
+      RestClient.post(change_url, {:access_token => access_token}.merge(options))
+    end
+
     def destroy
       RestClient.delete(destroy_url)
     end
@@ -27,6 +31,10 @@ module FacebookTestUsers
     end
 
     private
+
+    def change_url
+      GRAPH_API_BASE + "/#{id}"
+    end
 
     def destroy_url
       GRAPH_API_BASE + "/#{id}?access_token=#{URI.escape(access_token.to_s)}"
