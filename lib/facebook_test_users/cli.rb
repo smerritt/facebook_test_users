@@ -147,7 +147,7 @@ module FacebookTestUsers
             puts "Failed to change user"
           end
         else
-          $stderr.write("Unknown user '#{options[:user]}'")
+          $stderr.write("Unknown user '#{options[:user]}'\n")
           raise ArgumentError, "No such user"
         end
       end
