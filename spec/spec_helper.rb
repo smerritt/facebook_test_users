@@ -33,7 +33,8 @@ module FBTU
           end
         rescue Exception => e
           unless options[:quiet]
-            puts "Something failed.\nArgs:%s\nstdout:\n%s\n\nstderr:\n%s\n" % [
+            puts "Something failed whilst executing fbtu script.\n" \
+                 "Args:%s\nstdout:\n%s\n\nstderr:\n%s\n" % [
               argv_ish.inspect,
               @out.string,
               @err.string
