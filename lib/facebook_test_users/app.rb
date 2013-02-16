@@ -15,15 +15,15 @@ module FacebookTestUsers
     end
 
     def self.create!(attrs)
-      new_guy = new(attrs)
+      new_app = new(attrs)
 
-      if all.find {|app| app.name == new_guy.name }
-        raise ArgumentError, "App names must be unique, and there is already an app named \"#{new_guy.name}\"."
+      if all.find {|app| app.name == new_app.name }
+        raise ArgumentError, "App names must be unique, and there is already an app named \"#{new_app.name}\"."
       end
 
       DB.update do |data|
         data[:apps] ||= []
-        data[:apps] << new_guy.attrs
+        data[:apps] << new_app.attrs
       end
     end
 
