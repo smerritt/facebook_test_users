@@ -3,7 +3,9 @@
 Testing Facebook apps is hard; part of that difficulty comes from
 managing your test users. Currently, Facebook's "Developer" app
 doesn't offer any way to do it, so you wind up with a bunch of `curl`
-commands and pain.
+commands and pain (see Facebook's [API
+documentation](https://developers.facebook.com/docs/test_users/) for
+details).
 
 This gem tries to take away the pain of managing your test users. It's
 easy to get started.
