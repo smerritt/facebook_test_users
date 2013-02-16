@@ -8,7 +8,10 @@ module FacebookTestUsers
       check_unknown_options!
       def self.exit_on_failure?() true end
 
-      default_task :list
+      # default_task currently breaks subcommand help, so it's
+      # probably better to leave it out for now:
+      # https://github.com/wycats/thor/issues/306
+      #default_task :list
 
       desc "add", "Tell fbtu about a new application (must already exist on FB)"
       method_option "app_id", :type => :string, :required => true, :banner => "OpenGraph ID of the app"

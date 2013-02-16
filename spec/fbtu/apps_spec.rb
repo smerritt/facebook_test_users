@@ -8,6 +8,8 @@ describe "fbtu apps" do
   end
 
   it "defaults to listing apps" do
+    pending "thor issue with default_task in subcommands " \
+            "(https://github.com/wycats/thor/issues/306)"
     fbtu %w[apps add --name shlomo --app-id 12345 --app-secret abcdef]
     fbtu %w[apps]
     @out.should include("shlomo")
