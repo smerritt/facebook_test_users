@@ -14,7 +14,7 @@ easy to get started.
 
 `$ fbtu users list --app myapp`
 
-`$ fbtu users add --app myapp`
+`$ fbtu users add --app myapp --name Fred`
 
 `$ fbtu users rm --app myapp --user 1000000093284356`
 

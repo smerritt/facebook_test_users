@@ -53,11 +53,19 @@ module FacebookTestUsers
       end
 
       desc "add", "Add a test user to an application"
-      method_option "app", :aliases => %w[-a], :type => :string, :required => true, :banner => "Name of the app"
+      method_option "app", :aliases => %w[-a], :type => :string, :required => true,
+                    :banner => "Name of the app"
+      method_option "name", :aliases => %w[-n], :type => :string, :required => false,
+                    :banner => "Name of the new user"
+      method_option "installed", :aliases => %w[-i], :type => :string, :required => false,
+                    :banner => "whether your app should be installed for the test user"
+      method_option "locale", :aliases => %w[-l], :type => :string, :required => false,
+                    :banner => "the locale for the test user"
 
       def add
         app = find_app!(options[:app])
-        user = app.create_user
+        attrs = options.select { |k, v| %w(name installed locale).include? k.to_s }
+        user = app.create_user(attrs)
         puts "User ID:      #{user.id}"
         puts "Access Token: #{user.access_token}"
         puts "Login URL:    #{user.login_url}"

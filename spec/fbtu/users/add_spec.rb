@@ -21,6 +21,24 @@ describe "fbtu users add" do
       fbtu %w[users add --app alpha]
       @out.should include(@new_user_id.to_s)
     end
+
+    it "adds a user with the app not installed" do
+      # The API doesn't return the installed status
+      fbtu %w[users add --app alpha --installed false]
+      @out.should include(@new_user_id.to_s)
+    end
+
+    it "adds a named user" do
+      fbtu %w[users add --app alpha --name Joe]
+      # The API doesn't return the name
+      @out.should include(@new_user_id.to_s)
+    end
+
+    it "adds a user with a locale" do
+      fbtu %w[users add --app alpha --locale en_GB]
+      # The API doesn't return the locale
+      @out.should include(@new_user_id.to_s)
+    end
   end
 
   it "tells you if there was no such app" do
