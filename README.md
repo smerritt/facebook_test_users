@@ -22,6 +22,8 @@ easy to get started.
 
 `$ fbtu apps add-user --from-app myapp --user 1000000093284356 --to-app myotherapp`
 
+`$ fbtu apps rm-user --app myapp --user 1000000093284356`
+
 `$ fbtu users rm --app myapp --user 1000000093284356`
 
 You can also use it in your own Ruby applications; `require

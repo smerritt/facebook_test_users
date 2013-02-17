@@ -52,14 +52,9 @@ module FacebookTestUsers
       User.new(MultiJson.decode(user_data))
     end
 
-    def rm_user(uid, owner_app)
-      options = {
-        :access_token => access_token,
-        :owner_access_token => owner_app.access_token,
-        :uid => uid,
-      }
-      user_data = RestClient.post(users_url, options)
-      User.new(MultiJson.decode(user_data))
+    def rm_user(uid)
+      url = rm_user_url(uid, access_token)
+      RestClient.delete(url)
     end
 
     ## query methods
@@ -83,6 +78,10 @@ module FacebookTestUsers
 
     def users_url
       GRAPH_API_BASE + "/#{id}/accounts/test-users"
+    end
+
+    def rm_user_url(uid, token)
+      users_url + "?uid=#{uid}&access_token=#{URI.escape(token)}"
     end
 
     def validate!

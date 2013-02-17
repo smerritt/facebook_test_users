@@ -62,19 +62,16 @@ module FacebookTestUsers
         puts "User #{result.id} added to app '#{options[:to_app]}'"
       end
 
-      desc "rm-user", "Remove an existing user from another app"
-      method_option "from_app", :type => :string, :required => true,
+      desc "rm-user", "Remove an existing user from an app"
+      method_option "app", :type => :string, :required => true,
         :banner => "Name of the application from which user will be removed"
       method_option "user", :aliases => %w[-u], :type => :string, :required => true,
         :banner => "User ID to add"
-      method_option "owner_app", :type => :string, :required => true,
-        :banner => "Name of the application for which user was originally created"
       def rm_user
-        from_app  = FacebookTestUsers::CLI::find_app!(options[:from_app])
-        owner_app = FacebookTestUsers::CLI::find_app!(options[:owner_app])
+        from_app  = FacebookTestUsers::CLI::find_app!(options[:app])
         begin
-          result = from_app.rm_user(options[:user], owner_app)
-          puts "User #{result.id} removed from app '#{options[:from_app]}'"
+          result = from_app.rm_user(options[:user])
+          puts "User #{options[:user]} removed from app '#{options[:app]}'"
         rescue RestClient::BadRequest => bad_request
           json = MultiJson.decode(bad_request.response)
           begin
@@ -224,9 +221,11 @@ module FacebookTestUsers
             if error
               if error.match /(\(#2903\) Cannot delete this test account because it is associated with other applications.)/
                 $stderr.write("#$1\n")
-                $stderr.write("Try:\n")
+                $stderr.write("Run:\n")
                 $stderr.write("  #$0 users list-apps --app #{options[:app]} --user #{user.id}\n")
-                $stderr.write("  #$0 apps rm-user --owner-app #{options[:app]} --user #{user.id} --from-app <OTHER APP ID>\n")
+                $stderr.write("then for each of the other apps, run:\n")
+                $stderr.write("  #$0 apps rm-user --app APP-NAME --user #{user.id}\n")
+                $stderr.write("Then re-run this command.\n")
               else
                 $stderr.write(error + "\n")
               end
