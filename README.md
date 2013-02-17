@@ -20,6 +20,8 @@ easy to get started.
 
 `$ fbtu users change --app myapp --user 1000000093284356 --name "Sir Fred"`
 
+`$ fbtu apps add-user --from-app myapp --user 1000000093284356 --to-app myotherapp`
+
 `$ fbtu users rm --app myapp --user 1000000093284356`
 
 You can also use it in your own Ruby applications; `require
