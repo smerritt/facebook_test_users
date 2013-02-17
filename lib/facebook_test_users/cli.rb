@@ -1,5 +1,6 @@
 require 'thor'
 require 'facebook_test_users'
+require 'heredoc_unindent'
 
 module FacebookTestUsers
   module CLI
@@ -18,12 +19,13 @@ module FacebookTestUsers
         json['error']['message'] rescue json.inspect
       end
 
-      def handle_bad_request(output=true)
+      def handle_bad_request(raise_error=true)
         begin
           yield
         rescue RestClient::BadRequest => bad_request
           @message = bad_request_message(bad_request)
-          raise Thor::Error, "#{bad_request.class}: #@message"
+          raise Thor::Error, "#{bad_request.class}: #@message" if raise_error
+          nil
         end
       end
     end
@@ -241,28 +243,29 @@ module FacebookTestUsers
         end
 
         if user
-          result = handle_bad_request(output=false) do
+          result = handle_bad_request(raise_error=false) do
             user.destroy
           end
           if result
             puts "User ID #{user.id} removed"
           else
             if @message.match /(\(#2903\) Cannot delete this test account because it is associated with other applications.)/
-              $stderr.write <<-EOMSG
-                #$1
-                Run:
-
-                  #$0 users list-apps --app #{options[:app]} --user #{user.id}
-
-                then for each of the other apps, run:
-
-                  #$0 apps rm-user --app APP-NAME --user #{user.id}
-
-                Then re-run this command.
+              error = <<-EOMSG.unindent.gsub(/^\|/, '')
+              #$1
+              Run:
+              |
+                fbtu users list-apps --app #{options[:app]} --user #{user.id}
+              |
+              then for each of the other apps, run:
+              |
+                fbtu apps rm-user --app APP-NAME --user #{user.id}
+              |
+              Then re-run this command.
               EOMSG
             else
-              $stderr.write(@message + "\n")
+              error = @message
             end
+            raise Thor::Error, error
           end
         else
           raise Thor::Error, "Unknown user '#{options[:user]}'"

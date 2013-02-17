@@ -38,6 +38,9 @@ describe "fbtu users rm" do
     FakeWeb.should have_requested(:delete,
       "https://graph.facebook.com/#{@alice.id}?access_token=#{@alice.access_token}")
     @err.should include(error)
+    @err.should include("fbtu users list-apps")
+    @err.should include("fbtu apps rm-user")
+    @err.should include("Then re-run this command.")
   end
 
   it "doesn't delete the user if there's another issue" do
