@@ -7,9 +7,7 @@ module FacebookTestUsers
       def find_app!(name)
         app = App.find_by_name(name)
         unless app
-          $stderr.puts "Unknown app #{name}."
-          $stderr.puts "Run 'fbtu apps' to see known apps."
-          raise ArgumentError, "No such app"
+          raise Thor::Error, "Unknown app #{name}. Run 'fbtu apps' to see known apps."
         end
         app
       end
@@ -157,8 +155,10 @@ module FacebookTestUsers
       def friend
         app = find_app!(options[:app])
         users = app.users
-        u1 = users.find {|u| u.id.to_s == options[:user1] } or raise ArgumentError, "No user found w/id #{options[:user1].inspect}"
-        u2 = users.find {|u| u.id.to_s == options[:user2] } or raise ArgumentError, "No user found w/id #{options[:user2].inspect}"
+        u1 = users.find {|u| u.id.to_s == options[:user1] } or \
+          raise Thor::Error, "No user found w/id #{options[:user1].inspect}"
+        u2 = users.find {|u| u.id.to_s == options[:user2] } or \
+          raise Thor::Error, "No user found w/id #{options[:user2].inspect}"
 
         # The first request is just a request; the second request
         # accepts the first request.
@@ -194,8 +194,7 @@ module FacebookTestUsers
             puts "Failed to change user"
           end
         else
-          $stderr.write("Unknown user '#{options[:user]}'\n")
-          raise ArgumentError, "No such user"
+          raise Thor::Error, "Unknown user '#{options[:user]}'"
         end
       end
 
@@ -227,8 +226,7 @@ module FacebookTestUsers
             end
           end
         else
-          $stderr.write("Unknown user '#{options[:user]}'\n")
-          raise ArgumentError, "No such user"
+          raise Thor::Error, "Unknown user '#{options[:user]}'"
         end
       end
 
@@ -267,8 +265,7 @@ module FacebookTestUsers
             end
           end
         else
-          $stderr.write("Unknown user '#{options[:user]}'\n")
-          raise ArgumentError, "No such user"
+          raise Thor::Error, "Unknown user '#{options[:user]}'"
         end
       end
 
