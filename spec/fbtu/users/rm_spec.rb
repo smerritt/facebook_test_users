@@ -31,7 +31,9 @@ describe "fbtu users rm" do
     FakeWeb.register_uri(:delete, delete_url, :status => [ '400', 'Bad Request' ],
                          :body => response.to_json)
 
-    fbtu %w[users rm --app alpha --user] + [@alice.id]
+    lambda do
+      fbtu %w[users rm --app alpha --user] + [@alice.id], :quiet => true
+    end.should raise_error
 
     FakeWeb.should have_requested(:delete,
       "https://graph.facebook.com/#{@alice.id}?access_token=#{@alice.access_token}")
@@ -52,7 +54,9 @@ describe "fbtu users rm" do
     FakeWeb.register_uri(:delete, delete_url, :status => [ '400', 'Bad Request' ],
                          :body => response.to_json)
 
-    fbtu %w[users rm --app alpha --user] + [@alice.id]
+    lambda do
+      fbtu %w[users rm --app alpha --user] + [@alice.id], :quiet => true
+    end.should raise_error
 
     FakeWeb.should have_requested(:delete,
       "https://graph.facebook.com/#{@alice.id}?access_token=#{@alice.access_token}")

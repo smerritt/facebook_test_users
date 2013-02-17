@@ -155,6 +155,20 @@ module FBTU
           :body => {"data" => user_data}.to_json)
       end
 
+      def fakeweb_register_bad_request(method, url, code, error)
+        response = {
+          "error" => {
+            "message" => "(#{code}) " + error,
+            "type" => "OAuthException",
+            "code" => code
+          }
+        }
+
+        FakeWeb.register_uri(method, url,
+                             :status => [ '400', 'Bad Request' ],
+                             :body => response.to_json)
+      end
+
     end # SetupHelpers
 
   end

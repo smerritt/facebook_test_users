@@ -3,18 +3,38 @@ require 'facebook_test_users'
 
 module FacebookTestUsers
   module CLI
-    def CLI.find_app!(name)
-      app = App.find_by_name(name)
-      unless app
-        $stderr.puts "Unknown app #{name}."
-        $stderr.puts "Run 'fbtu apps' to see known apps."
-        raise ArgumentError, "No such app"
+    module Utils
+      def find_app!(name)
+        app = App.find_by_name(name)
+        unless app
+          $stderr.puts "Unknown app #{name}."
+          $stderr.puts "Run 'fbtu apps' to see known apps."
+          raise ArgumentError, "No such app"
+        end
+        app
       end
-      app
+
+      def bad_request_message(bad_request)
+        response = bad_request.response
+        json = MultiJson.decode(response)
+        json['error']['message'] rescue json.inspect
+      end
+
+      def handle_bad_request(output=true)
+        begin
+          yield
+        rescue RestClient::BadRequest => bad_request
+          @message = bad_request_message(bad_request)
+          raise Thor::Error, "#{bad_request.class}: #@message"
+        end
+      end
     end
 
-    class Apps < Thor
+    class Base < Thor
+      include Utils
+    end
 
+    class Apps < Base
       check_unknown_options!
       def self.exit_on_failure?() true end
 
@@ -51,15 +71,17 @@ module FacebookTestUsers
       method_option "permissions", :aliases => %w[-p], :type => :string, :default => "read_stream",
       :banner => "Permissions the app should be given"
       def add_user
-        to_app   = FacebookTestUsers::CLI::find_app!(options[:to_app])
-        from_app = FacebookTestUsers::CLI::find_app!(options[:from_app])
+        to_app   = find_app!(options[:to_app])
+        from_app = find_app!(options[:from_app])
         add_user_options = options.select do |k, v|
           %w[installed permissions].include? k.to_s
         end
         add_user_options[:uid] = options[:user]
         add_user_options[:owner_access_token] = from_app.access_token
-        result = to_app.add_user(add_user_options)
-        puts "User #{result.id} added to app '#{options[:to_app]}'"
+        handle_bad_request do
+          result = to_app.add_user(add_user_options)
+          puts "User #{result.id} added to app '#{options[:to_app]}'"
+        end
       end
 
       desc "rm-user", "Remove an existing user from an app"
@@ -68,23 +90,20 @@ module FacebookTestUsers
       method_option "user", :aliases => %w[-u], :type => :string, :required => true,
         :banner => "User ID to add"
       def rm_user
-        from_app  = FacebookTestUsers::CLI::find_app!(options[:app])
-        begin
-          result = from_app.rm_user(options[:user])
+        app  = find_app!(options[:app])
+        result = handle_bad_request do
+          app.rm_user(options[:user])
+        end
+        if result
           puts "User #{options[:user]} removed from app '#{options[:app]}'"
-        rescue RestClient::BadRequest => bad_request
-          json = MultiJson.decode(bad_request.response)
-          begin
-            $stderr.write(json['error']['message'] + "\n")
-          rescue
-            $stderr.write(json.inspect + "\n")
-          end
+        else
+          puts "User #{options[:user]} not removed from app '#{options[:app]}'"
         end
       end
 
     end # Apps
 
-    class Users < Thor
+    class Users < Base
       check_unknown_options!
       def self.exit_on_failure?() true end
 
@@ -92,7 +111,7 @@ module FacebookTestUsers
       method_option "app", :aliases => %w[-a], :type => :string, :required => true, :banner => "Name of the app"
 
       def list
-        app = FacebookTestUsers::CLI::find_app!(options[:app])
+        app = find_app!(options[:app])
         if app.users.any?
           shell.print_table([
               ['User ID', 'Access Token', 'Login URL'],
@@ -116,14 +135,18 @@ module FacebookTestUsers
                     :banner => "the locale for the test user"
 
       def create
-        app = FacebookTestUsers::CLI::find_app!(options[:app])
+        app = find_app!(options[:app])
         attrs = options.select { |k, v| %w(name installed locale).include? k.to_s }
-        user = app.create_user(attrs)
-        puts "User ID:      #{user.id}"
-        puts "Access Token: #{user.access_token}"
-        puts "Login URL:    #{user.login_url}"
-        puts "Email:        #{user.email}"
-        puts "Password:     #{user.password}"
+        user = handle_bad_request do
+          app.create_user(attrs)
+        end
+        if user
+          puts "User ID:      #{user.id}"
+          puts "Access Token: #{user.access_token}"
+          puts "Login URL:    #{user.login_url}"
+          puts "Email:        #{user.email}"
+          puts "Password:     #{user.password}"
+        end
       end
 
       desc "friend", "Make two of an app's users friends"
@@ -132,15 +155,17 @@ module FacebookTestUsers
       method_option "user2", :aliases => %w[-2 -u2], :type => :string, :required => true, :banner => "Second user ID"
 
       def friend
-        app = FacebookTestUsers::CLI::find_app!(options[:app])
+        app = find_app!(options[:app])
         users = app.users
         u1 = users.find {|u| u.id.to_s == options[:user1] } or raise ArgumentError, "No user found w/id #{options[:user1].inspect}"
         u2 = users.find {|u| u.id.to_s == options[:user2] } or raise ArgumentError, "No user found w/id #{options[:user2].inspect}"
 
-        # the first request is just a request; the second request
-        # accepts the first request
-        u1.send_friend_request_to(u2)
-        u2.send_friend_request_to(u1)
+        # The first request is just a request; the second request
+        # accepts the first request.
+        handle_bad_request do
+          u1.send_friend_request_to(u2)
+          u2.send_friend_request_to(u1)
+        end
       end
 
       desc "change", "Change a test user's name and/or password"
@@ -154,13 +179,15 @@ module FacebookTestUsers
                     :banner => "New password for the user"
 
       def change
-        app = FacebookTestUsers::CLI::find_app!(options[:app])
+        app = find_app!(options[:app])
         user = app.users.find do |user|
           user.id.to_s == options[:user].to_s
         end
 
         if user
-          response = user.change(options)
+          response = handle_bad_request do
+            user.change(options)
+          end
           if response == "true"
             puts "Successfully changed user"
           else
@@ -178,22 +205,26 @@ module FacebookTestUsers
       method_option "app", :aliases => %w[-a], :type => :string, :required => true,
                     :banner => "Name of the app owning the user"
       def list_apps
-        app = FacebookTestUsers::CLI::find_app!(options[:app])
+        app = find_app!(options[:app])
         user = app.users.find do |user|
           user.id.to_s == options[:user].to_s
         end
 
         if user
-          response = user.owner_apps(app)
-          json = MultiJson.decode(response)
-          apps = json['data'] rescue nil
-          if apps
-            shell.print_table([
-              ['App name', 'App ID'],
-              *(apps.map { |app| [app['name'], app['id']] })
-            ])
-          else
-            $stderr.write("No apps returned; response was: #{response}\n")
+          response = handle_bad_request do
+            user.owner_apps(app)
+          end
+          if response
+            json = MultiJson.decode(response)
+            apps = json['data'] rescue nil
+            if apps
+              shell.print_table([
+                                  ['App name', 'App ID'],
+                                  *(apps.map { |app| [app['name'], app['id']] })
+                                ])
+            else
+              $stderr.write("No apps returned; response was: #{response}\n")
+            end
           end
         else
           $stderr.write("Unknown user '#{options[:user]}'\n")
@@ -206,31 +237,33 @@ module FacebookTestUsers
       method_option "user", :banner => "ID of the user to remove", :aliases => %w[-u], :type => :string, :required => true
 
       def rm
-        app = FacebookTestUsers::CLI::find_app!(options[:app])
+        app = find_app!(options[:app])
         user = app.users.find do |user|
           user.id.to_s == options[:user].to_s
         end
 
         if user
-          begin
+          result = handle_bad_request(output=false) do
             user.destroy
+          end
+          if result
             puts "User ID #{user.id} removed"
-          rescue RestClient::BadRequest => bad_request
-            json = MultiJson.decode(bad_request.response)
-            error = json['error']['message'] rescue nil
-            if error
-              if error.match /(\(#2903\) Cannot delete this test account because it is associated with other applications.)/
-                $stderr.write("#$1\n")
-                $stderr.write("Run:\n")
-                $stderr.write("  #$0 users list-apps --app #{options[:app]} --user #{user.id}\n")
-                $stderr.write("then for each of the other apps, run:\n")
-                $stderr.write("  #$0 apps rm-user --app APP-NAME --user #{user.id}\n")
-                $stderr.write("Then re-run this command.\n")
-              else
-                $stderr.write(error + "\n")
-              end
+          else
+            if @message.match /(\(#2903\) Cannot delete this test account because it is associated with other applications.)/
+              $stderr.write <<-EOMSG
+                #$1
+                Run:
+
+                  #$0 users list-apps --app #{options[:app]} --user #{user.id}
+
+                then for each of the other apps, run:
+
+                  #$0 apps rm-user --app APP-NAME --user #{user.id}
+
+                Then re-run this command.
+              EOMSG
             else
-              $stderr.write(json.inspect + "\n")
+              $stderr.write(@message + "\n")
             end
           end
         else
@@ -243,7 +276,7 @@ module FacebookTestUsers
       method_option "app", :aliases => %w[-a], :type => :string, :required => true, :banner => "Name of the app"
 
       def nuke
-        app = FacebookTestUsers::CLI::find_app!(options[:app])
+        app = find_app!(options[:app])
         app.users.each(&:destroy)
       end
 
