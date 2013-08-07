@@ -1,6 +1,8 @@
 require 'thor'
 require 'facebook_test_users'
 require 'heredoc_unindent'
+require 'launchy'
+require 'fileutils'
 
 module FacebookTestUsers
   module CLI
@@ -140,12 +142,22 @@ module FacebookTestUsers
         user = handle_bad_request do
           app.create_user(attrs)
         end
+
         if user
-          puts "User ID:      #{user.id}"
-          puts "Access Token: #{user.access_token}"
-          puts "Login URL:    #{user.login_url}"
-          puts "Email:        #{user.email}"
-          puts "Password:     #{user.password}"
+          result += "User ID:      #{user.id}\n"
+          result += "Access Token: #{user.access_token}\n"
+          result += "Login URL:    #{user.login_url}\n"
+          result += "Email:        #{user.email}\n"
+          result += "Password:     #{user.password}"
+
+          location = File.join(Rails.root.join("tmp", "facebook_test_users"), "#{Time.now.to_i}_#{options[:name]}.txt")
+
+          FileUtils.mkdir_p(location)
+          File.open(filepath, 'w') do |f|
+            f.write content
+          end
+
+          Launchy.open("file:///#{URI.parse(URI.escape(location))}")
         end
       end
 
