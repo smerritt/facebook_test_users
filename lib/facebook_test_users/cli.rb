@@ -144,17 +144,23 @@ module FacebookTestUsers
         end
 
         if user
-          result = "User ID:      #{user.id}\n"
-          result += "Access Token: #{user.access_token}\n"
-          result += "Login URL:    #{user.login_url}\n"
-          result += "Email:        #{user.email}\n"
-          result += "Password:     #{user.password}"
+          result = "<html><body style='padding:1em;font-family:helvetica;'>"
+          result += "<h1>#{options[:name].upcase}</h1>"
+          result += "<hr style='height:1px;width:200px;border:1px solid #000;''>"
+          result += "<ul style='color:#999;'>"
+          result += "<li>User ID:      #{user.id}</li>"
+          result += "<li>Access Token: #{user.access_token}</li>"
+          result += "<li>Login URL:    #{user.login_url}</li>"
+          result += "<li>Email:        #{user.email}</li>"
+          result += "<li>Password:     #{user.password}</li>"
+          result += "</ul>"
+          result += "</body></html>"
 
           location = File.join(Rails.root.join("tmp", "facebook_test_users"))
 
           FileUtils.mkdir_p(location)
 
-          location = File.join(location.to_s,"#{Time.now.to_i}_#{options[:name].downcase.gsub(' ','_')}.txt")
+          location = File.join(location.to_s,"#{Time.now.to_i}_#{options[:name].downcase.gsub(' ','_')}.html")
           File.open(location, 'w') do |f|
             f.write result
           end
