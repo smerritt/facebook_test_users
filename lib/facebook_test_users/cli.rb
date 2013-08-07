@@ -156,7 +156,7 @@ module FacebookTestUsers
 
           location = File.join(location.to_s,"#{Time.now.to_i}_#{options[:name].downcase.gsub(' ','_')}.txt")
           File.open(location, 'w') do |f|
-            f.write content
+            f.write result
           end
 
           Launchy.open("file:///#{URI.parse(URI.escape(location))}")
