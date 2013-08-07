@@ -150,9 +150,11 @@ module FacebookTestUsers
           result += "Email:        #{user.email}\n"
           result += "Password:     #{user.password}"
 
-          location = File.join(Rails.root.join("tmp", "facebook_test_users"), "#{Time.now.to_i}_#{options[:name].downcase.gsub(' ','_')}.txt")
+          location = File.join(Rails.root.join("tmp", "facebook_test_users"))
 
           FileUtils.mkdir_p(location)
+
+          location = File.join(location.to_s,"#{Time.now.to_i}_#{options[:name].downcase.gsub(' ','_')}.txt")
           File.open(location, 'w') do |f|
             f.write content
           end
