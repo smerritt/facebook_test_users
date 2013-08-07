@@ -144,16 +144,16 @@ module FacebookTestUsers
         end
 
         if user
-          result = "<html><body style='padding:1em;font-family:helvetica;'>"
+          result = "<html><body style='padding:1em;font-family:helvetica;text-align:left;'>"
           result += "<h1>#{options[:name].upcase}</h1>"
           result += "<hr style='height:1px;width:200px;border:1px solid #000;''>"
-          result += "<ul style='color:#999;'>"
-          result += "<li>User ID:      #{user.id}</li>"
-          result += "<li>Access Token: #{user.access_token}</li>"
-          result += "<li>Login URL:    #{user.login_url}</li>"
-          result += "<li>Email:        #{user.email}</li>"
-          result += "<li>Password:     #{user.password}</li>"
-          result += "</ul>"
+          result += "<dl>"
+          result += "<dt style='color:#666;font-size:11px;'>User ID:      </dt><dd style='color:#999;font-size:13px;'>#{user.id}</dd>"
+          result += "<dt style='color:#666;font-size:11px;'>Access Token: </dt><dd style='color:#999;font-size:13px;'>#{user.access_token}</dd>"
+          result += "<dt style='color:#666;font-size:11px;'>Login URL:    </dt><dd style='color:#999;font-size:13px;'>#{user.login_url}</dd>"
+          result += "<dt style='color:#666;font-size:11px;'>Email:        </dt><dd style='color:#999;font-size:13px;'>#{user.email}</dd>"
+          result += "<dt style='color:#666;font-size:11px;'>Password:     </dt><dd style='color:#999;font-size:13px;'>#{user.password}</dd>"
+          result += "</dl>"
           result += "</body></html>"
 
           location = File.join(Rails.root.join("tmp", "facebook_test_users"))
