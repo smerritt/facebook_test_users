@@ -153,7 +153,7 @@ module FacebookTestUsers
           location = File.join(Rails.root.join("tmp", "facebook_test_users"), "#{Time.now.to_i}_#{options[:name].downcase.gsub(' ','_')}.txt")
 
           FileUtils.mkdir_p(location)
-          File.open(filepath, 'w') do |f|
+          File.open(location, 'w') do |f|
             f.write content
           end
 
