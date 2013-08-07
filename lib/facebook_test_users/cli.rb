@@ -145,14 +145,13 @@ module FacebookTestUsers
 
         if user
           result = "<html><body style='padding:1em;font-family:helvetica;text-align:left;'>"
-          result += "<h1>#{options[:name].upcase}</h1>"
-          result += "<hr style='height:1px;width:200px;border:1px solid #000;''>"
+          result += "<h1 style='border:0 0 1px 0 #999;padding:0 0 1em 0;margin:0 0 1em 0;'>#{options[:name].upcase}</h1>"
           result += "<dl>"
-          result += "<dt style='color:#666;font-size:11px;'>User ID:      </dt><dd style='color:#999;font-size:13px;'>#{user.id}</dd>"
-          result += "<dt style='color:#666;font-size:11px;'>Access Token: </dt><dd style='color:#999;font-size:13px;'>#{user.access_token}</dd>"
-          result += "<dt style='color:#666;font-size:11px;'>Login URL:    </dt><dd style='color:#999;font-size:13px;'>#{user.login_url}</dd>"
-          result += "<dt style='color:#666;font-size:11px;'>Email:        </dt><dd style='color:#999;font-size:13px;'>#{user.email}</dd>"
-          result += "<dt style='color:#666;font-size:11px;'>Password:     </dt><dd style='color:#999;font-size:13px;'>#{user.password}</dd>"
+          result += "<dt style='color:#666;font-size:11px;'>User ID:      </dt><dd style='color:#999;font-size:13px;margin:0 0 1em 0;'>#{user.id}</dd>"
+          result += "<dt style='color:#666;font-size:11px;'>Access Token: </dt><dd style='color:#999;font-size:13px;margin:0 0 1em 0;'>#{user.access_token}</dd>"
+          result += "<dt style='color:#666;font-size:11px;'>Login URL:    </dt><dd style='color:#999;font-size:13px;margin:0 0 1em 0;'>#{user.login_url}</dd>"
+          result += "<dt style='color:#666;font-size:11px;'>Email:        </dt><dd style='color:#999;font-size:13px;margin:0 0 1em 0;'>#{user.email}</dd>"
+          result += "<dt style='color:#666;font-size:11px;'>Password:     </dt><dd style='color:#999;font-size:13px;margin:0 0 1em 0;'>#{user.password}</dd>"
           result += "</dl>"
           result += "</body></html>"
 
