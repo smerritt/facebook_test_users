@@ -144,13 +144,13 @@ module FacebookTestUsers
         end
 
         if user
-          result += "User ID:      #{user.id}\n"
+          result = "User ID:      #{user.id}\n"
           result += "Access Token: #{user.access_token}\n"
           result += "Login URL:    #{user.login_url}\n"
           result += "Email:        #{user.email}\n"
           result += "Password:     #{user.password}"
 
-          location = File.join(Rails.root.join("tmp", "facebook_test_users"), "#{Time.now.to_i}_#{options[:name]}.txt")
+          location = File.join(Rails.root.join("tmp", "facebook_test_users"), "#{Time.now.to_i}_#{options[:name].downcase.gsub(' ','_')}.txt")
 
           FileUtils.mkdir_p(location)
           File.open(filepath, 'w') do |f|
