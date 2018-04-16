@@ -23,10 +23,7 @@ module FacebookTestUsers
     private
 
     def self.extract_access_token(response_body)
-      response_body.
-        match(/=(.*)/).     # response is a string like "access_token=bunch-o-crap"
-        captures[0].
-        strip
+      JSON.parse(response_body)["access_token"]
     end
 
   end
